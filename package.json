@@ -1,0 +1,32 @@
+{
+  "name": "meta_ads_frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build --turbopack",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.56.1",
+    "@types/bcryptjs": "^2.4.6",
+    "bcryptjs": "^3.0.2",
+    "next": "15.5.2",
+    "next-auth": "^5.0.0-beta.29",
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "autoprefixer": "^10.4.18",
+    "eslint": "^9",
+    "eslint-config-next": "15.5.2",
+    "postcss": "^8.4.35",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
+  }
+}
