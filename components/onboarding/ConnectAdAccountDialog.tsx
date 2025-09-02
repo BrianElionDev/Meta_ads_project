@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 
 interface AdAccountData {
   organization_email: string;
@@ -15,14 +15,18 @@ interface ConnectAdAccountDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onComplete: (data: AdAccountData) => void;
+  onUpdate?: (data: AdAccountData) => void;
   data: Partial<AdAccountData>;
+  isEditing?: boolean;
 }
 
 export default function ConnectAdAccountDialog({
   isOpen,
   onClose,
   onComplete,
-  data
+  onUpdate,
+  data,
+  isEditing = false
 }: ConnectAdAccountDialogProps) {
   const [formData, setFormData] = useState<AdAccountData>({
     organization_email: data.organization_email || "",
@@ -33,10 +37,26 @@ export default function ConnectAdAccountDialog({
     whatsapp_ID: data.whatsapp_ID || "",
   });
 
+  // Update form data when data prop changes (for editing)
+  React.useEffect(() => {
+    setFormData({
+      organization_email: data.organization_email || "",
+      ad_account_ID: data.ad_account_ID || "",
+      page_ID: data.page_ID || "",
+      pixel_ID: data.pixel_ID || "",
+      instagram_ID: data.instagram_ID || "",
+      whatsapp_ID: data.whatsapp_ID || "",
+    });
+  }, [data]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.organization_email && formData.ad_account_ID) {
-      onComplete(formData);
+      if (isEditing && onUpdate) {
+        onUpdate(formData);
+      } else {
+        onComplete(formData);
+      }
     }
   };
 
@@ -159,7 +179,7 @@ export default function ConnectAdAccountDialog({
               type="submit"
               className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
-              Complete
+              {isEditing ? 'Update' : 'Complete'}
             </button>
           </div>
         </form>

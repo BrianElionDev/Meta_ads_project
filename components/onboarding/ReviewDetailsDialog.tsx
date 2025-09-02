@@ -18,6 +18,8 @@ interface ReviewDetailsDialogProps {
   onClose: () => void;
   onComplete: () => void;
   onRestart: () => void;
+  onEditBusiness: () => void;
+  onEditAdAccount: () => void;
   data: OnboardingData;
 }
 
@@ -26,6 +28,8 @@ export default function ReviewDetailsDialog({
   onClose,
   onComplete,
   onRestart,
+  onEditBusiness,
+  onEditAdAccount,
   data
 }: ReviewDetailsDialogProps) {
   if (!isOpen) return null;
@@ -58,12 +62,20 @@ export default function ReviewDetailsDialog({
         <div className="space-y-6">
           {/* Business Profile Section */}
           <div className="bg-gray-700/30 rounded-lg p-4">
-            <h3 className="text-lg font-semibold text-white mb-3 flex items-center">
-              <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center mr-3">
-                <span className="text-white text-sm font-bold">1</span>
-              </div>
-              Business Profile
-            </h3>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-lg font-semibold text-white flex items-center">
+                <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center mr-3">
+                  <span className="text-white text-sm font-bold">1</span>
+                </div>
+                Business Profile
+              </h3>
+              <button
+                onClick={onEditBusiness}
+                className="px-3 py-1.5 bg-blue-600/20 text-blue-400 text-sm rounded-lg hover:bg-blue-600/30 transition-colors border border-blue-500/30"
+              >
+                Edit
+              </button>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
               <div>
                 <span className="text-gray-400">Name:</span>
@@ -86,12 +98,20 @@ export default function ReviewDetailsDialog({
 
           {/* Ad Account Section */}
           <div className="bg-gray-700/30 rounded-lg p-4">
-            <h3 className="text-lg font-semibold text-white mb-3 flex items-center">
-              <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center mr-3">
-                <span className="text-white text-sm font-bold">2</span>
-              </div>
-              Ad Account Connection
-            </h3>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-lg font-semibold text-white flex items-center">
+                <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center mr-3">
+                  <span className="text-white text-sm font-bold">2</span>
+                </div>
+                Ad Account Connection
+              </h3>
+              <button
+                onClick={onEditAdAccount}
+                className="px-3 py-1.5 bg-blue-600/20 text-blue-400 text-sm rounded-lg hover:bg-blue-600/30 transition-colors border border-blue-500/30"
+              >
+                Edit
+              </button>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
               <div>
                 <span className="text-gray-400">Organization Email:</span>
