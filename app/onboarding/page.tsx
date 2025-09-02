@@ -38,24 +38,57 @@ export default function OnboardingPage() {
   const [showBusinessDialog, setShowBusinessDialog] = useState(false);
   const [showAdAccountDialog, setShowAdAccountDialog] = useState(false);
   const [showReviewDialog, setShowReviewDialog] = useState(false);
+  const [isEditingBusiness, setIsEditingBusiness] = useState(false);
+  const [isEditingAdAccount, setIsEditingAdAccount] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
 
   const handleBusinessProfileComplete = (data: Partial<OnboardingData>) => {
     setOnboardingData((prev) => ({ ...prev, ...data }));
     setCompletedSteps((prev) => [...prev, 1]);
     setCurrentStep(2);
+    setShowBusinessDialog(false);
+    setIsEditingBusiness(false);
   };
 
   const handleAdAccountComplete = (data: Partial<OnboardingData>) => {
     setOnboardingData((prev) => ({ ...prev, ...data }));
     setCompletedSteps((prev) => [...prev, 2]);
     setCurrentStep(3);
+    setShowAdAccountDialog(false);
+    setIsEditingAdAccount(false);
   };
 
   const handleReviewComplete = () => {
     setCompletedSteps((prev) => [...prev, 3]);
     setIsCompleted(true);
+    setShowReviewDialog(false);
     handleSubmit();
+  };
+
+  const handleEditBusiness = () => {
+    setShowReviewDialog(false);
+    setIsEditingBusiness(true);
+    setShowBusinessDialog(true);
+  };
+
+  const handleEditAdAccount = () => {
+    setShowReviewDialog(false);
+    setIsEditingAdAccount(true);
+    setShowAdAccountDialog(true);
+  };
+
+  const handleBusinessProfileUpdate = (data: Partial<OnboardingData>) => {
+    setOnboardingData((prev) => ({ ...prev, ...data }));
+    setShowBusinessDialog(false);
+    setIsEditingBusiness(false);
+    // Don't change completed steps or current step when editing
+  };
+
+  const handleAdAccountUpdate = (data: Partial<OnboardingData>) => {
+    setOnboardingData((prev) => ({ ...prev, ...data }));
+    setShowAdAccountDialog(false);
+    setIsEditingAdAccount(false);
+    // Don't change completed steps or current step when editing
   };
 
   const handleRestart = () => {
@@ -74,6 +107,8 @@ export default function OnboardingPage() {
     setCompletedSteps([]);
     setCurrentStep(1);
     setIsCompleted(false);
+    setIsEditingBusiness(false);
+    setIsEditingAdAccount(false);
   };
 
   const handleSubmit = async () => {
@@ -362,14 +397,18 @@ export default function OnboardingPage() {
         isOpen={showBusinessDialog}
         onClose={() => setShowBusinessDialog(false)}
         onComplete={handleBusinessProfileComplete}
+        onUpdate={handleBusinessProfileUpdate}
         data={onboardingData}
+        isEditing={isEditingBusiness}
       />
 
       <ConnectAdAccountDialog
         isOpen={showAdAccountDialog}
         onClose={() => setShowAdAccountDialog(false)}
         onComplete={handleAdAccountComplete}
+        onUpdate={handleAdAccountUpdate}
         data={onboardingData}
+        isEditing={isEditingAdAccount}
       />
 
       <ReviewDetailsDialog
@@ -377,6 +416,8 @@ export default function OnboardingPage() {
         onClose={() => setShowReviewDialog(false)}
         onComplete={handleReviewComplete}
         onRestart={handleRestart}
+        onEditBusiness={handleEditBusiness}
+        onEditAdAccount={handleEditAdAccount}
         data={onboardingData}
       />
     </div>
