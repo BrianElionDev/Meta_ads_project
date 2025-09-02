@@ -1,5 +1,6 @@
 export interface Client {
     id?: string;
+    user_id?: string;
     name: string;
     email: string;
     country: string;
@@ -13,6 +14,6 @@ export interface Client {
     created_at?: string;
     last_modified?: string;
   }
-  
+    
 
   
