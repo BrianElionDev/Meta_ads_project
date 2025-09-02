@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 
 interface BusinessProfileData {
   name: string;
@@ -13,14 +13,18 @@ interface BusinessProfileDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onComplete: (data: BusinessProfileData) => void;
+  onUpdate?: (data: BusinessProfileData) => void;
   data: Partial<BusinessProfileData>;
+  isEditing?: boolean;
 }
 
 export default function BusinessProfileDialog({
   isOpen,
   onClose,
   onComplete,
-  data
+  onUpdate,
+  data,
+  isEditing = false
 }: BusinessProfileDialogProps) {
   const [formData, setFormData] = useState<BusinessProfileData>({
     name: data.name || "",
@@ -29,10 +33,24 @@ export default function BusinessProfileDialog({
     business: data.business || "",
   });
 
+  // Update form data when data prop changes (for editing)
+  React.useEffect(() => {
+    setFormData({
+      name: data.name || "",
+      email: data.email || "",
+      country: data.country || "",
+      business: data.business || "",
+    });
+  }, [data]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.name && formData.email && formData.country && formData.business) {
-      onComplete(formData);
+      if (isEditing && onUpdate) {
+        onUpdate(formData);
+      } else {
+        onComplete(formData);
+      }
     }
   };
 
@@ -141,7 +159,7 @@ export default function BusinessProfileDialog({
               type="submit"
               className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
-              Complete
+              {isEditing ? 'Update' : 'Complete'}
             </button>
           </div>
         </form>
