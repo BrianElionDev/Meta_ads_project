@@ -10,6 +10,7 @@ interface CampaignFormData {
   startDate: string;
   endDate: string;
   budgetPreference: string;
+  weeklyBudget?: string;
   websiteLink?: string;
   appId?: string;
   pageId?: string;
@@ -82,12 +83,14 @@ export default function CreateCampaignPage() {
     startDate: "",
     endDate: "",
     budgetPreference: "",
+    weeklyBudget: "",
     websiteLink: "",
     appId: "",
     pageId: ""
   });
 
   const [errors, setErrors] = useState<Partial<CampaignFormData>>({});
+  const [showAdSetDialog, setShowAdSetDialog] = useState(false);
 
   const handleInputChange = (field: keyof CampaignFormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -128,6 +131,10 @@ export default function CreateCampaignPage() {
       newErrors.budgetPreference = "Please select a budget preference";
     }
 
+    if (formData.budgetPreference === "predictable" && !formData.weeklyBudget?.trim()) {
+      newErrors.weeklyBudget = "Weekly budget is required for predictable budget preference";
+    }
+
     // Validate additional fields based on objective
     const selectedObjective = campaignObjectives.find(obj => obj.value === formData.objective);
     if (selectedObjective?.requiresAdditional) {
@@ -145,12 +152,19 @@ export default function CreateCampaignPage() {
     e.preventDefault();
     
     if (validateForm()) {
-      // TODO: Handle form submission
-      console.log("Campaign data:", formData);
-      // For now, just show success and redirect
-      alert("Campaign created successfully!");
-      router.push("/dashboard");
+      setShowAdSetDialog(true);
     }
+  };
+
+  const handleCreateNewAdSet = () => {
+    setShowAdSetDialog(false);
+    router.push("/create-ad-set");
+  };
+
+  const handleReuseAdSet = () => {
+    setShowAdSetDialog(false);
+    // TODO: Implement reuse existing ad set functionality
+    console.log("Reuse existing ad set");
   };
 
   const selectedObjective = campaignObjectives.find(obj => obj.value === formData.objective);
@@ -324,6 +338,36 @@ export default function CreateCampaignPage() {
             {errors.budgetPreference && <p className="text-red-400 text-sm mt-1">{errors.budgetPreference}</p>}
           </div>
 
+          {/* Weekly Budget Section for Predictable Selection */}
+          {formData.budgetPreference === "predictable" && (
+            <div className="bg-gray-800/60 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50">
+              <h3 className="text-lg font-semibold text-white mb-4">Weekly Budget</h3>
+              <p className="text-gray-400 text-sm mb-4">
+                Ensure it is accurate since it will never be exceeded.
+              </p>
+              <div>
+                <label className="block text-white text-sm font-medium mb-2">
+                  Specify your EXACT weekly budget *
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3 top-3 text-white text-lg">$</span>
+                  <input
+                    type="number"
+                    value={formData.weeklyBudget}
+                    onChange={(e) => handleInputChange('weeklyBudget', e.target.value)}
+                    min="0"
+                    step="0.01"
+                    className={`w-full pl-8 pr-4 py-3 bg-gray-700/50 text-white placeholder-gray-400 rounded-lg border focus:outline-none focus:border-blue-500 ${
+                      errors.weeklyBudget ? 'border-red-500' : 'border-gray-600/50'
+                    }`}
+                    placeholder="0.00"
+                  />
+                </div>
+                {errors.weeklyBudget && <p className="text-red-400 text-sm mt-1">{errors.weeklyBudget}</p>}
+              </div>
+            </div>
+          )}
+
           {/* Action Buttons */}
           <div className="flex justify-between pt-6">
             <button
@@ -337,11 +381,70 @@ export default function CreateCampaignPage() {
               type="submit"
               className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
-              Create Campaign
+              Proceed to Ad Set Creation
             </button>
           </div>
         </form>
       </div>
+
+      {/* Ad Set Creation Dialog */}
+      {showAdSetDialog && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-gray-800 rounded-2xl p-8 max-w-2xl w-full mx-4 border border-gray-700/50">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-white">Create Ad Set</h2>
+              <button
+                onClick={() => setShowAdSetDialog(false)}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="space-y-6">
+              <div 
+                className="bg-gray-700/30 rounded-lg p-6 border border-gray-600/50 hover:border-blue-500/50 transition-colors cursor-pointer"
+                onClick={handleCreateNewAdSet}
+              >
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 bg-blue-600/20 rounded-lg flex items-center justify-center border border-blue-500/30">
+                    <svg className="w-6 h-6 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold text-white mb-2">Create New Ad Set</h3>
+                    <p className="text-gray-300 text-sm">
+                      Start from scratch with a completely new ad set tailored to your campaign
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div 
+                className="bg-gray-700/30 rounded-lg p-6 border border-gray-600/50 hover:border-blue-500/50 transition-colors cursor-pointer"
+                onClick={handleReuseAdSet}
+              >
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 bg-green-600/20 rounded-lg flex items-center justify-center border border-green-500/30">
+                    <svg className="w-6 h-6 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057A1 1 0 015.999 9H1a1 1 0 010-2h4.999a1 1 0 011 1v2.101a7.002 7.002 0 0111.601-2.566 1 1 0 111.885.666A5.002 5.002 0 0014.001 13H11a1 1 0 010-2h4a1 1 0 011 1v1a1 1 0 01-1 1h-4.001z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold text-white mb-2">Reuse Existing Ad Set</h3>
+                    <p className="text-gray-300 text-sm">
+                      Use a previously created ad set as a template for this campaign
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
