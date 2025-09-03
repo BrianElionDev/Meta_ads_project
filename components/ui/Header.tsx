@@ -2,79 +2,94 @@
 
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import { signOut } from "next-auth/react";
 import Avatar from "./Avatar";
 
 export default function Header() {
-  const { user, loading, signOut } = useAuth();
-  const [showDropdown, setShowDropdown] = useState(false);
+  const { user, loading } = useAuth();
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const handleSignOut = () => {
+    signOut({ callbackUrl: "/" });
+    setIsOpen(false);
+  };
 
   return (
-    <header className="w-full py-6 px-8 bg-gray-800/80 backdrop-blur-sm border-b border-gray-700/50">
+    <header className="w-full py-6 px-8 bg-gray-800/80 backdrop-blur-sm border-b border-gray-700/50 relative z-50">
       <div className="max-w-6xl mx-auto flex items-center justify-between">
-        <h1 className="text-xl font-bold text-white"><Link href="/">Meta Ads Automation</Link></h1>
+        <h1 className="text-xl font-bold text-white">
+          <Link href="/">Meta Ads Automation</Link>
+        </h1>
 
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-4">
           <button className="px-4 py-2 bg-gray-700 text-white text-sm rounded-lg hover:bg-gray-600 transition-colors">
             About
           </button>
 
           {loading ? (
-            <div className="flex items-center space-x-2 p-2">
-              <div className="w-8 h-8 bg-gray-700 rounded-full animate-pulse"></div>
-              <div className="w-20 h-4 bg-gray-700 rounded animate-pulse"></div>
-            </div>
+            <div className="w-8 h-8 bg-gray-700 rounded-full animate-pulse"></div>
           ) : user ? (
-            <div className="relative">
+            <div className="relative" ref={dropdownRef}>
               <button
-                onClick={() => setShowDropdown(!showDropdown)}
-                className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-700 transition-colors"
+                onClick={() => setIsOpen(!isOpen)}
+                className="flex items-center space-x-2 px-3 py-2 text-white hover:bg-gray-700 rounded-lg transition-colors"
               >
-                <Avatar
-                  src={user.image}
-                  alt={user.name || user.email}
-                  size="md"
-                />
-                <span className="text-white text-sm hidden sm:block">
-                  {user.name || user.email}
-                </span>
+                <Avatar src={user.image} alt={user.name || user.email} />
+                <span className="text-sm">{user.name || user.email}</span>
                 <svg
-                  className={`w-4 h-4 text-gray-400 transition-transform ${
-                    showDropdown ? "rotate-180" : ""
-                  }`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+                  className="w-4 h-4"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
                 >
                   <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
+                    fillRule="evenodd"
+                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                    clipRule="evenodd"
                   />
                 </svg>
               </button>
 
-              {showDropdown && (
-                <div className="absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-xl border border-gray-700 z-50">
-                  <div className="py-2">
-                    <Link
-                      href="/dashboard"
-                      className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 transition-colors"
-                      onClick={() => setShowDropdown(false)}
-                    >
-                      Dashboard
-                    </Link>
-                    <button
-                      onClick={() => {
-                        signOut();
-                        setShowDropdown(false);
-                      }}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 transition-colors"
-                    >
-                      Sign Out
-                    </button>
-                  </div>
+              {isOpen && (
+                <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 z-[9999] bg-gray-800 border border-gray-700">
+                  <Link
+                    href="/dashboard"
+                    onClick={() => setIsOpen(false)}
+                    className="block px-4 py-2 text-sm text-white hover:bg-gray-700 transition-colors"
+                  >
+                    Dashboard
+                  </Link>
+                  <Link
+                    href="/"
+                    onClick={() => setIsOpen(false)}
+                    className="block px-4 py-2 text-sm text-white hover:bg-gray-700 transition-colors"
+                  >
+                    Home
+                  </Link>
+                  <hr className="my-1 border-gray-600" />
+                  <button
+                    onClick={handleSignOut}
+                    className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-gray-700 transition-colors"
+                  >
+                    Sign Out
+                  </button>
                 </div>
               )}
             </div>
