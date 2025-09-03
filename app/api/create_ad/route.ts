@@ -5,8 +5,12 @@ import { AdCampaign } from "@/types/adCreation";
 export async function POST(request: NextRequest): Promise<NextResponse> {
     const body = await request.json();
     const ad: AdCampaign= body;
+    const webhookUrl: string = process.env.N8N_WEBHOOK_URL || '';
+    if (!webhookUrl) {
+        return NextResponse.json({error: 'N8N webhook URL is not set'}, {status: 500});
+    }
 
-    const response = await axios.post('https://brianeliondev.app.n8n.cloud/webhook/38941a23-94bd-40f3-8d11-87b3b955d6c7', {
+    const response = await axios.post(webhookUrl, {
         method: 'POST',
         body: JSON.stringify(ad),
     });
