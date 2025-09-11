@@ -77,6 +77,7 @@ export async function GET(
       status: firstAd.status,
       created_at: firstAd.created_at,
       ad_count: ads.length,
+      adsets: [] as unknown[],
     };
 
     // Group ads by adset_ID to create adsets

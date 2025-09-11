@@ -33,12 +33,6 @@ export default function AdsetDetailPage() {
 
   const adsetId = params?.id as string;
 
-  useEffect(() => {
-    if (adsetId) {
-      fetchAdsetDetails();
-    }
-  }, [adsetId, fetchAdsetDetails]);
-
   const fetchAdsetDetails = useCallback(async () => {
     try {
       setLoading(true);
@@ -57,6 +51,12 @@ export default function AdsetDetailPage() {
       setLoading(false);
     }
   }, [adsetId]);
+
+  useEffect(() => {
+    if (adsetId) {
+      fetchAdsetDetails();
+    }
+  }, [adsetId, fetchAdsetDetails]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
