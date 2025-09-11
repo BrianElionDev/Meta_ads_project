@@ -2,8 +2,12 @@
 
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { Suspense } from "react";
 
-export default function AuthError() {
+// Force dynamic rendering
+export const dynamic = "force-dynamic";
+
+function AuthErrorContent() {
   const searchParams = useSearchParams();
   const message = searchParams.get("message");
 
@@ -36,5 +40,23 @@ export default function AuthError() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AuthError() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+          <div className="text-center">
+            <h2 className="mt-6 text-3xl font-bold text-gray-900">
+              Loading...
+            </h2>
+          </div>
+        </div>
+      }
+    >
+      <AuthErrorContent />
+    </Suspense>
   );
 }
