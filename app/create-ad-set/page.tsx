@@ -162,7 +162,7 @@ export default function CreateAdSetPage() {
   };
 
   const validateForm = (): boolean => {
-    const newErrors: Partial<AdSetFormData> = {};
+    const newErrors: Record<string, string> = {};
 
     if (!formData.name.trim()) {
       newErrors.name = "Ad set name is required";
@@ -201,7 +201,7 @@ export default function CreateAdSetPage() {
   };
 
   const validateAdCreativeForm = (): boolean => {
-    const newErrors: Partial<AdCreativeFormData> = {};
+    const newErrors: Record<string, string> = {};
 
     if (adCreativeData.creationType === "new") {
       if (!adCreativeData.name.trim()) {
