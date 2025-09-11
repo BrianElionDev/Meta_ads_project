@@ -25,7 +25,7 @@ export default function RootLayout({
         <Providers>
           <BackgroundSpeckles />
           <Header />
-          <main className="relative z-10 p-8 max-w-6xl mx-auto">
+          <main className="relative p-8 mx-auto">
             {children}
           </main>
         </Providers>
