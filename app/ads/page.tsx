@@ -195,7 +195,7 @@ export default function AdsPage() {
                       </div>
                       <div>
                         <h3 className="text-lg font-semibold text-white">
-                          {ad.name}
+                          {ad.ad_name}
                         </h3>
                         <p className="text-sm text-gray-400">
                           {ad.campaign_name} • {ad.adset_name}
